@@ -4,7 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:movie_app/provider/movie_provider.dart';
-import 'package:movie_app/widgets/movie_card.dart';
+import 'package:movie_app/screens/movie_create_screen.dart';
+import 'package:movie_app/widgets/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
@@ -17,8 +18,9 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Provider.of<MovieProvider>(context, listen: false)
-              .addMovie(MovieCard());
+          // Provider.of<MovieProvider>(context, listen: false)
+          //     .addMovie(MovieCard());
+          Navigator.push(context, ScaleTransition4(MovieCreateScreen()));
         },
         child: Icon(
           FontAwesomeIcons.plusSquare,

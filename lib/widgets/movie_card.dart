@@ -2,7 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:movie_app/helper/button.dart';
+import 'package:movie_app/helper/delete_button.dart';
+import 'package:movie_app/helper/like_button.dart';
 
 class MovieCard extends StatelessWidget {
   const MovieCard({Key? key}) : super(key: key);
@@ -48,12 +49,7 @@ class MovieCard extends StatelessWidget {
                       ),
                       SizedBox(height: 5),
                       const Text(
-                        "Created on : Monday",
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      SizedBox(height: 5),
-                      const Text(
-                        "Created on : Monday",
+                        "IMDB : 6.5/10",
                         style: TextStyle(fontSize: 18),
                       ),
                       SizedBox(height: 5),
@@ -62,22 +58,22 @@ class MovieCard extends StatelessWidget {
                 ],
               ),
               Padding(
-                padding: const EdgeInsets.all(18.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 28.0, vertical: 18),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    ActionButton(
-                      color: Colors.blue,
-                      buttonName: 'Like',
-                      icon: FontAwesomeIcons.thumbsUp,
-                    ),
-                    ActionButton(
-                      color: Colors.redAccent,
-                      icon: FontAwesomeIcons.trash,
-                      buttonName: 'Delete',
-                    ),
+                    LikeButton(),
+                    DeleteButton(),
                   ],
                 ),
+              ),
+              Divider(
+                color: Colors.black45,
+              ),
+              Text(
+                'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the ',
+                style: TextStyle(fontSize: 16),
               ),
             ],
           ),

@@ -1,17 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class ActionButton extends StatelessWidget {
-  const ActionButton({
-    Key? key,
-    required this.buttonName,
-    required this.icon,
-    required this.color,
-  }) : super(key: key);
-
-  final String buttonName;
-  final IconData icon;
-  final Color color;
+class DeleteButton extends StatelessWidget {
+  const DeleteButton({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,24 +12,24 @@ class ActionButton extends StatelessWidget {
         width: 100,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          border: Border.all(color: color),
+          border: Border.all(color: Colors.redAccent),
           borderRadius: BorderRadius.circular(30),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: const [
             Text(
-              buttonName,
+              'Delete',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: color,
+                color: Colors.redAccent,
               ),
             ),
-            const SizedBox(width: 5),
+            SizedBox(width: 5),
             Icon(
-              icon,
-              color: color,
+              FontAwesomeIcons.trash,
+              color: Colors.redAccent,
             ),
           ],
         ),
