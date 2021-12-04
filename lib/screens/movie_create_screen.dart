@@ -1,10 +1,18 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:movie_app/methods/firebase_data_store.dart';
+import 'package:movie_app/models/firebase_upload.dart';
+import 'package:movie_app/screens/home_page.dart';
 import 'package:movie_app/widgets/action_button.dart';
 import 'package:movie_app/widgets/input_fields.dart';
+import 'package:path/path.dart' as path;
 
 class MovieCreateScreen extends StatefulWidget {
   const MovieCreateScreen({Key? key}) : super(key: key);
@@ -16,6 +24,14 @@ class MovieCreateScreen extends StatefulWidget {
 class _MovieCreateScreenState extends State<MovieCreateScreen> {
   // form key
   final _formKey = GlobalKey<State>();
+
+  // image source
+  File? _image;
+
+  // upload task
+  UploadTask? task;
+
+  String? urlDownload;
 
   // Controllers
   TextEditingController creatorController = TextEditingController();
@@ -54,11 +70,52 @@ class _MovieCreateScreenState extends State<MovieCreateScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Text(
+                    'Upload Movie Poster',
+                    style: TextStyle(
+                      color: Colors.blueAccent,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 10),
                   Center(
-                    child: Image(
-                      image: AssetImage('assets/images/movies.png'),
-                      width: 150,
-                      height: 150,
+                    child: Stack(
+                      children: [
+                        _image == null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(15),
+                                child: Image(
+                                  image: AssetImage('assets/images/movies.png'),
+                                  alignment: Alignment.center,
+                                  width: 150,
+                                  height: 150,
+                                  fit: BoxFit.fill,
+                                ),
+                              )
+                            : ClipRRect(
+                                borderRadius: BorderRadius.circular(15),
+                                child: Image.file(
+                                  _image!,
+                                  alignment: Alignment.center,
+                                  width: 150,
+                                  height: 150,
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                        Positioned(
+                          child: InkWell(
+                            onTap: showDialogBoxForUploadImage,
+                            child: Icon(
+                              FontAwesomeIcons.camera,
+                              color: Colors.yellowAccent,
+                              size: 20,
+                            ),
+                          ),
+                          bottom: 10,
+                          right: 10,
+                        ),
+                      ],
                     ),
                   ),
                   SizedBox(height: 15),
@@ -74,14 +131,14 @@ class _MovieCreateScreenState extends State<MovieCreateScreen> {
                       child: Column(
                         children: [
                           InputField(
-                              label: 'Creator',
-                              controller: creatorController,
-                              onChange: (creatorName) {
-                                creatorController.value = creatorController
-                                    .value
-                                    .copyWith(text: creatorName);
-                              },
-                              icon: FontAwesomeIcons.userShield),
+                            label: 'Creator',
+                            controller: creatorController,
+                            onChange: (creatorName) {
+                              creatorController.value = creatorController.value
+                                  .copyWith(text: creatorName);
+                            },
+                            icon: FontAwesomeIcons.userShield,
+                          ),
                           InputField(
                             label: 'Movie Name',
                             controller: movieController,
@@ -116,7 +173,7 @@ class _MovieCreateScreenState extends State<MovieCreateScreen> {
                               ),
                               InkWell(
                                 onTap: () {
-                                  showDialogBox();
+                                  showDialogBoxForSave();
                                 },
                                 child: ActionButton(
                                   icon: FontAwesomeIcons.solidSave,
@@ -140,7 +197,8 @@ class _MovieCreateScreenState extends State<MovieCreateScreen> {
     );
   }
 
-  void showDialogBox() {
+  // alert box while saving movie details
+  void showDialogBoxForSave() {
     showDialog(
       context: context,
       barrierDismissible: false, // user must tap button!
@@ -190,20 +248,35 @@ class _MovieCreateScreenState extends State<MovieCreateScreen> {
                 ),
                 const SizedBox(width: 15),
                 InkWell(
-                  onTap: () {},
-                  child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.lightBlueAccent),
-                        borderRadius: BorderRadius.circular(30),
+                  onTap: () async {
+                    await uploadImage();
+                    sendDetailsToFireStore(
+                      creatorController.text,
+                      movieController.text,
+                      imdbController.text,
+                      urlDownload,
+                    );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HomePage(),
                       ),
-                      child: const Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
-                        child: Text(
-                          'Yes',
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                      )),
+                    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.lightBlueAccent),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: const Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
+                      child: Text(
+                        'Yes',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -211,5 +284,118 @@ class _MovieCreateScreenState extends State<MovieCreateScreen> {
         );
       },
     );
+  }
+
+  // alert box for upload image
+  void showDialogBoxForUploadImage() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Choose an option to upload image'),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                InkWell(
+                  onTap: () {
+                    getImage(ImageSource.camera);
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    color: Colors.lightBlueAccent,
+                    child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
+                      child: Row(
+                        children: [
+                          Icon(
+                            FontAwesomeIcons.cameraRetro,
+                            color: Colors.white,
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            'Camera',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 15),
+                InkWell(
+                  onTap: () {
+                    getImage(ImageSource.gallery);
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    color: Colors.lightBlueAccent,
+                    child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
+                      child: Row(
+                        children: [
+                          Icon(
+                            FontAwesomeIcons.images,
+                            color: Colors.white,
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            'Gallery',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Pick image
+  Future getImage(ImageSource source) async {
+    try {
+      final image = await ImagePicker().pickImage(source: source);
+
+      if (image == null) return;
+
+      final imgTemp = File(image.path);
+
+      setState(() {
+        _image = imgTemp;
+      });
+    } on PlatformException catch (e) {
+      print('Failed to pick image $e');
+    }
+  }
+
+  // Upload image
+  Future uploadImage() async {
+    if (_image == null) return;
+
+    final imageName = path.basename(_image!.path);
+    final destination = 'files/$imageName';
+
+    task = FirebaseUpload.uploadFile(destination, _image!);
+
+    if (task == null) return null;
+
+    final snapshot = await task!.whenComplete(() {});
+    urlDownload = await snapshot.ref.getDownloadURL();
   }
 }
