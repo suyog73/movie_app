@@ -73,7 +73,7 @@ class MovieCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     LikeButton(),
-                    DeleteButton(movie:movie),
+                    DeleteButton(movie: movie),
                   ],
                 ),
               ),

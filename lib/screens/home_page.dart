@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:movie_app/provider/movie_detail_provider.dart';
 import 'package:movie_app/provider/movie_provider.dart';
 import 'package:movie_app/screens/movie_create_screen.dart';
 import 'package:movie_app/widgets/movie_card.dart';
@@ -32,7 +31,6 @@ class _HomePageState extends State<HomePage> {
         i < querySnapshot.docs.length;
         i++) {
       Map<String, dynamic> data = querySnapshot.docs[i].data();
-      print('docId ${data['docId']}');
 
       Provider.of<MovieProvider>(context, listen: false).addMovie(
         data['imageUrl'],
@@ -94,8 +92,6 @@ class _HomePageState extends State<HomePage> {
                 builder:
                     (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
-                    print(
-                        "size       ${Provider.of<MovieProvider>(context, listen: false).moviesSize}");
                     return GridView.builder(
                       physics: BouncingScrollPhysics(),
                       itemCount:
@@ -104,7 +100,7 @@ class _HomePageState extends State<HomePage> {
                           crossAxisCount: 1),
                       itemBuilder: (context, index) {
                         final movie = Provider.of<MovieProvider>(context)
-                            .moviesCard[index];
+                            .moviesCard[movieSize - index - 1];
                         return MovieCard(movie: movie);
                       },
                     );
@@ -113,7 +109,6 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               onRefresh: () async {
-                print("refresh1");
                 return getData();
               },
             ),
