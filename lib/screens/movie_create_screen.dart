@@ -352,6 +352,7 @@ class _MovieCreateScreenState extends State<MovieCreateScreen> {
                 InkWell(
                   onTap: () {
                     getImage(ImageSource.camera);
+                    Navigator.pop(context);
                   },
                   child: Container(
                     color: Colors.lightBlueAccent,
