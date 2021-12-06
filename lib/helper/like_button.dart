@@ -1,17 +1,33 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class LikeButton extends StatelessWidget {
+bool isLike = false;
+int like = 1;
+
+class LikeButton extends StatefulWidget {
   const LikeButton({Key? key}) : super(key: key);
 
   @override
+  State<LikeButton> createState() => _LikeButtonState();
+}
+
+class _LikeButtonState extends State<LikeButton> {
+  @override
   Widget build(BuildContext context) {
     return InkWell(
+      onTap: () {
+        setState(() {
+          isLike ? like-- : like++;
+          isLike = !isLike;
+        });
+      },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
+        children: [
           Text(
-            '3',
+            like.toString(),
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -20,7 +36,7 @@ class LikeButton extends StatelessWidget {
           ),
           SizedBox(width: 5),
           Icon(
-            FontAwesomeIcons.thumbsUp,
+            isLike ? FontAwesomeIcons.solidThumbsUp : FontAwesomeIcons.thumbsUp,
             color: Colors.blue,
           ),
         ],

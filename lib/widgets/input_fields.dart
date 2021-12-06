@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:movie_app/helper/constants.dart';
 
 class InputField extends StatelessWidget {
@@ -10,6 +11,8 @@ class InputField extends StatelessWidget {
     required this.controller,
     required this.onChange,
     required this.icon,
+    required this.keyBoardType,
+    required this.textInputAction,
   }) : super(key: key);
 
   final String label;
@@ -17,20 +20,14 @@ class InputField extends StatelessWidget {
   final ValueSetter<String> onChange;
   final FormFieldValidator<String>? validator;
   final IconData icon;
+  final TextInputType keyBoardType;
+  final TextInputAction textInputAction;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Text(
-        //   label,
-        //   style: const TextStyle(
-        //     fontSize: 17,
-        //     fontWeight: FontWeight.w400,
-        //     color: Colors.black,
-        //   ),
-        // ),
         const SizedBox(height: 5),
         TextFormField(
           onChanged: onChange,
@@ -43,6 +40,8 @@ class InputField extends StatelessWidget {
               hintText: label),
           validator: validator,
           cursorColor: Colors.lightBlueAccent,
+          keyboardType: keyBoardType,
+          textInputAction: textInputAction,
         ),
         const SizedBox(height: 10),
       ],

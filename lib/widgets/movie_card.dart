@@ -3,9 +3,15 @@
 import 'package:flutter/material.dart';
 import 'package:movie_app/helper/delete_button.dart';
 import 'package:movie_app/helper/like_button.dart';
+import 'package:movie_app/models/movie.dart';
 
 class MovieCard extends StatelessWidget {
-  const MovieCard({Key? key}) : super(key: key);
+  const MovieCard({
+    Key? key,
+    required this.movie,
+  }) : super(key: key);
+
+  final Movie movie;
 
   @override
   Widget build(BuildContext context) {
@@ -23,36 +29,40 @@ class MovieCard extends StatelessWidget {
               Row(
                 children: [
                   Image(
-                    image: AssetImage('assets/images/movies.png'),
+                    image: NetworkImage(movie.url),
                     width: size.width * 0.39,
                     height: size.width * 0.39,
+                    fit: BoxFit.fill,
                   ),
                   SizedBox(width: 20),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "Creator : Suyog Patil",
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      SizedBox(height: 5),
-                      const Text(
-                        "Movie Name : Avengers",
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      SizedBox(height: 5),
-                      const Text(
-                        "Created on : Monday",
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      SizedBox(height: 5),
-                      const Text(
-                        "IMDB : 6.5/10",
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      SizedBox(height: 5),
-                    ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Creator : ${movie.creator}",
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          "Movie : ${movie.movie}",
+                          softWrap: true,
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        SizedBox(height: 5),
+                        const Text(
+                          "Created on : Monday",
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          "IMDB : ${movie.imdb}/10",
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        SizedBox(height: 5),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -63,7 +73,7 @@ class MovieCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     LikeButton(),
-                    DeleteButton(),
+                    DeleteButton(movie:movie),
                   ],
                 ),
               ),

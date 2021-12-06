@@ -1,17 +1,20 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:movie_app/helper/validators.dart';
 import 'package:movie_app/methods/firebase_data_store.dart';
 import 'package:movie_app/models/firebase_upload.dart';
 import 'package:movie_app/screens/home_page.dart';
 import 'package:movie_app/widgets/action_button.dart';
 import 'package:movie_app/widgets/input_fields.dart';
+import 'package:movie_app/widgets/loading.dart';
 import 'package:path/path.dart' as path;
 
 class MovieCreateScreen extends StatefulWidget {
@@ -23,7 +26,7 @@ class MovieCreateScreen extends StatefulWidget {
 
 class _MovieCreateScreenState extends State<MovieCreateScreen> {
   // form key
-  final _formKey = GlobalKey<State>();
+  final GlobalKey<FormState> _formKey = GlobalKey();
 
   // image source
   File? _image;
@@ -32,11 +35,20 @@ class _MovieCreateScreenState extends State<MovieCreateScreen> {
   UploadTask? task;
 
   String? urlDownload;
+  bool visibility = false;
 
   // Controllers
   TextEditingController creatorController = TextEditingController();
   TextEditingController movieController = TextEditingController();
   TextEditingController imdbController = TextEditingController();
+
+  // add movie
+  Future addMovie() async {
+    var collection = FirebaseFirestore.instance
+        .collection('movies')
+        .orderBy('id', descending: false);
+    var querySnapshot = await collection.get();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,6 +150,9 @@ class _MovieCreateScreenState extends State<MovieCreateScreen> {
                                   .copyWith(text: creatorName);
                             },
                             icon: FontAwesomeIcons.userShield,
+                            validator: creatorValidator,
+                            keyBoardType: TextInputType.name,
+                            textInputAction: TextInputAction.next,
                           ),
                           InputField(
                             label: 'Movie Name',
@@ -147,6 +162,9 @@ class _MovieCreateScreenState extends State<MovieCreateScreen> {
                                   .copyWith(text: movieName);
                             },
                             icon: FontAwesomeIcons.film,
+                            validator: movieValidator,
+                            keyBoardType: TextInputType.name,
+                            textInputAction: TextInputAction.next,
                           ),
                           InputField(
                             label: 'IMDB Rating',
@@ -156,6 +174,17 @@ class _MovieCreateScreenState extends State<MovieCreateScreen> {
                                   .copyWith(text: movieName);
                             },
                             icon: FontAwesomeIcons.imdb,
+                            keyBoardType: TextInputType.number,
+                            validator: (v) {
+                              if (v!.isEmpty) {
+                                return 'IMDB is required';
+                              }
+                              double myVal = double.parse(v);
+                              if (myVal > 10 || myVal < 0) {
+                                return 'Please enter valid imdb rating between 0-10';
+                              }
+                            },
+                            textInputAction: TextInputAction.done,
                           ),
                           SizedBox(height: 15),
                           Row(
@@ -173,7 +202,9 @@ class _MovieCreateScreenState extends State<MovieCreateScreen> {
                               ),
                               InkWell(
                                 onTap: () {
-                                  showDialogBoxForSave();
+                                  if (_formKey.currentState!.validate()) {
+                                    showDialogBoxForSave();
+                                  }
                                 },
                                 child: ActionButton(
                                   icon: FontAwesomeIcons.solidSave,
@@ -249,19 +280,30 @@ class _MovieCreateScreenState extends State<MovieCreateScreen> {
                 const SizedBox(width: 15),
                 InkWell(
                   onTap: () async {
+                    setState(() {
+                      visibility = true;
+                    });
                     await uploadImage();
-                    sendDetailsToFireStore(
+                    Loading(isLoad: visibility);
+                    await sendDetailsToFireStore(
                       creatorController.text,
                       movieController.text,
                       imdbController.text,
-                      urlDownload,
+                      urlDownload ??
+                          "https://play-lh.googleusercontent.com/5Y97X0kfd9uznAJXFOmLXEjqNTjJNZ07nKOmPvPbFUoUKkBswIYGIzMOzcYnF9bMdw",
+                      DateTime.now().toUtc().millisecondsSinceEpoch,
                     );
+
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => HomePage(),
                       ),
                     );
+
+                    setState(() {
+                      visibility = false;
+                    });
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -301,7 +343,6 @@ class _MovieCreateScreenState extends State<MovieCreateScreen> {
                 InkWell(
                   onTap: () {
                     getImage(ImageSource.camera);
-                    Navigator.pop(context);
                   },
                   child: Container(
                     color: Colors.lightBlueAccent,
@@ -330,7 +371,7 @@ class _MovieCreateScreenState extends State<MovieCreateScreen> {
                 ),
                 const SizedBox(width: 15),
                 InkWell(
-                  onTap: () {
+                  onTap: () async {
                     getImage(ImageSource.gallery);
                     Navigator.pop(context);
                   },
@@ -365,6 +406,15 @@ class _MovieCreateScreenState extends State<MovieCreateScreen> {
         );
       },
     );
+    Widget showSpinner() {
+      if (visibility) {
+        return Center(child: CircularProgressIndicator());
+      } else {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => HomePage()));
+      }
+      return Container();
+    }
   }
 
   // Pick image
