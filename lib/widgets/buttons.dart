@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Widget component2(
+Widget buttons(
     String string, double width, VoidCallback voidCallback, context) {
   Size size = MediaQuery.of(context).size;
   return InkWell(

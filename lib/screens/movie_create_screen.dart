@@ -147,7 +147,7 @@ class _MovieCreateScreenState extends State<MovieCreateScreen> {
                         key: _formKey,
                         child: Column(
                           children: [
-                            InputField(
+                            InputFields(
                               label: 'Creator',
                               controller: creatorController,
                               onChange: (creatorName) {
@@ -160,7 +160,7 @@ class _MovieCreateScreenState extends State<MovieCreateScreen> {
                               keyBoardType: TextInputType.name,
                               textInputAction: TextInputAction.next,
                             ),
-                            InputField(
+                            InputFields(
                               label: 'Movie Name',
                               controller: movieController,
                               onChange: (movieName) {
@@ -172,7 +172,7 @@ class _MovieCreateScreenState extends State<MovieCreateScreen> {
                               keyBoardType: TextInputType.name,
                               textInputAction: TextInputAction.next,
                             ),
-                            InputField(
+                            InputFields(
                               label: 'IMDB Rating',
                               controller: imdbController,
                               onChange: (movieName) {

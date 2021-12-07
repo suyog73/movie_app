@@ -1,14 +1,19 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:movie_app/helper/constants.dart';
+import 'package:movie_app/methods/get_user_data.dart';
+import 'package:movie_app/screens/app_drawer.dart';
+import 'package:movie_app/screens/home_page.dart';
 import 'package:movie_app/screens/signup_screen.dart';
-import 'package:movie_app/widgets/component1.dart';
-import 'package:movie_app/widgets/component2.dart';
+import 'package:movie_app/widgets/input_field.dart';
+import 'package:movie_app/widgets/buttons.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -19,6 +24,21 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreen extends State<LoginScreen>
     with SingleTickerProviderStateMixin {
+  // form key
+  final _formKey = GlobalKey<FormState>();
+
+  // Editing Controllers
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  // Firebase Auth
+  final _auth = FirebaseAuth.instance;
+
+  // string for displaying the error Message
+  String? errorMessage;
+
+  bool showSpinner = false;
+
   late AnimationController _controller;
   late Animation<double> _opacity;
   late Animation<double> _transform;
@@ -65,78 +85,106 @@ class _LoginScreen extends State<LoginScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        child: SizedBox(
-          height: size.height,
-          child: Container(
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              gradient: kLinearGradient,
-            ),
-            child: Opacity(
-              opacity: _opacity.value,
-              child: Transform.scale(
-                scale: _transform.value,
-                child: Container(
-                  width: size.width * .9,
-                  height: size.width * 1.1,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(.1),
-                        blurRadius: 90,
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      SizedBox(),
-                      Text(
-                        'Login',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.redAccent.withOpacity(.7),
+      body: ModalProgressHUD(
+        inAsyncCall: showSpinner,
+        child: SingleChildScrollView(
+          child: SizedBox(
+            height: size.height,
+            child: Container(
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                gradient: kLinearGradient,
+              ),
+              child: Opacity(
+                opacity: _opacity.value,
+                child: Transform.scale(
+                  scale: _transform.value,
+                  child: Container(
+                    width: size.width * .9,
+                    height: size.width * 1.1,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(.1),
+                          blurRadius: 90,
                         ),
-                      ),
-                      SizedBox(),
-                      component1(Icons.email_outlined, 'Email...', false, true,
-                          context),
-                      component1(Icons.lock_outline, 'Password...', true, false,
-                          context),
-                      component2(
-                        'LOGIN',
-                        2.6,
-                        () {
-                          // HapticFeedback.lightImpact();
-                          Fluttertoast.showToast(msg: 'Login button pressed');
-                        },
-                        context,
-                      ),
-                      SizedBox(),
-                      InkWell(
-                        onTap: () {
-                          Fluttertoast.showToast(
-                              msg: 'Create a new account pressed');
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => SignupScreen()),
-                          );
-                        },
-                        child: Text(
-                          'Create a new account',
-                          style: TextStyle(
-                            color: Colors.lightBlueAccent,
-                            fontSize: 17,
+                      ],
+                    ),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          SizedBox(),
+                          Text(
+                            'Login',
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.redAccent.withOpacity(.7),
+                            ),
                           ),
-                        ),
+                          SizedBox(),
+                          InputField(
+                            textInputType: TextInputType.emailAddress,
+                            icon: FontAwesomeIcons.envelope,
+                            hintText: 'Email...',
+                            controller: emailController,
+                            onChange: (email) {
+                              emailController.value =
+                                  emailController.value.copyWith(text: email);
+                            },
+                            textInputAction: TextInputAction.next,
+                          ),
+                          InputField(
+                            textInputType: TextInputType.visiblePassword,
+                            icon: Icons.lock_outline,
+                            hintText: 'Password...',
+                            controller: passwordController,
+                            onChange: (password) {
+                              passwordController.value = passwordController
+                                  .value
+                                  .copyWith(text: password);
+                            },
+                            textInputAction: TextInputAction.done,
+                          ),
+                          buttons(
+                            'LOGIN',
+                            2.6,
+                            () async {
+                              // HapticFeedback.lightImpact();
+                              FocusScope.of(context).unfocus();
+
+                              await login();
+                            },
+                            context,
+                          ),
+                          SizedBox(),
+                          InkWell(
+                            onTap: () {
+                              Fluttertoast.showToast(
+                                  msg: 'Create a new account pressed');
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SignupScreen(),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              'Create a new account',
+                              style: TextStyle(
+                                color: Colors.lightBlueAccent,
+                                fontSize: 17,
+                              ),
+                            ),
+                          ),
+                          SizedBox(),
+                        ],
                       ),
-                      SizedBox(),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -145,5 +193,54 @@ class _LoginScreen extends State<LoginScreen>
         ),
       ),
     );
+  }
+
+  Future<void> login() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        setState(() {
+          showSpinner = true;
+        });
+        await _auth
+            .signInWithEmailAndPassword(
+                email: emailController.text, password: passwordController.text)
+            .then(
+              (uid) => {
+                Fluttertoast.showToast(msg: "Login Successful"),
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => const GetUserData()),
+                ),
+              },
+            );
+      } on FirebaseAuthException catch (error) {
+        setState(() {
+          showSpinner = false;
+        });
+        switch (error.code) {
+          case "invalid-email":
+            errorMessage = "Your email address appears to be malformed.";
+
+            break;
+          case "wrong-password":
+            errorMessage = "Your password is wrong.";
+            break;
+          case "user-not-found":
+            errorMessage = "User with this email doesn't exist.";
+            break;
+          case "user-disabled":
+            errorMessage = "User with this email has been disabled.";
+            break;
+          case "too-many-requests":
+            errorMessage = "Too many requests";
+            break;
+          case "operation-not-allowed":
+            errorMessage = "Signing in with Email and Password is not enabled.";
+            break;
+          default:
+            errorMessage = "An undefined Error happened.";
+        }
+        Fluttertoast.showToast(msg: errorMessage!);
+      }
+    }
   }
 }

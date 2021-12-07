@@ -10,6 +10,8 @@ import 'package:movie_app/widgets/movie_card.dart';
 import 'package:movie_app/widgets/page_transition.dart';
 import 'package:provider/provider.dart';
 
+import 'app_drawer.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -55,6 +57,25 @@ class _HomePageState extends State<HomePage> {
     int movieSize = Provider.of<MovieProvider>(context).moviesSize;
 
     return Scaffold(
+      drawer: AppDrawer(),
+      appBar: AppBar(
+        elevation: 0,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Icon(FontAwesomeIcons.video),
+            SizedBox(width: 15),
+            Text(
+              'MovieAdda',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(context, ScaleTransition4(MovieCreateScreen()));
@@ -66,24 +87,6 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Column(
         children: [
-          Container(
-            color: Colors.yellow,
-            height: 90,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 25.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(FontAwesomeIcons.video),
-                  SizedBox(width: 12),
-                  Text(
-                    'Movies',
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ),
-          ),
           Expanded(
             child: RefreshIndicator(
               backgroundColor: Colors.lightBlueAccent,

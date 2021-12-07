@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:movie_app/helper/constants.dart';
 
-class InputField extends StatelessWidget {
-  const InputField({
+class InputFields extends StatelessWidget {
+  const InputFields({
     Key? key,
     required this.label,
     this.validator,

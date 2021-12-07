@@ -98,8 +98,7 @@ class OnBoardingScreen extends StatelessWidget {
     );
   }
 
-  // ToDo push replacement
-  void goToHome(context) => Navigator.of(context).push(
+  void goToHome(context) => Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => LoginScreen()),
       );
 }
