@@ -9,10 +9,13 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:movie_app/helper/constants.dart';
-import 'package:movie_app/screens/home_page.dart';
-import 'package:movie_app/screens/login_screen.dart';
+import 'package:movie_app/helper/validators.dart';
+import 'package:movie_app/methods/authentication.dart';
+import 'package:movie_app/methods/get_user_data.dart';
+import 'package:movie_app/screens/movies/all_movies.dart';
+import 'package:movie_app/screens/Auth%20Screens/login_screen.dart';
 import 'package:movie_app/widgets/input_field.dart';
-import 'package:movie_app/widgets/buttons.dart';
+import 'package:movie_app/widgets/button/buttons.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -137,6 +140,7 @@ class _SignupScreenState extends State<SignupScreen>
                                   .copyWith(text: username);
                             },
                             textInputAction: TextInputAction.next,
+                            validator: usernameValidator,
                           ),
                           InputField(
                             textInputType: TextInputType.emailAddress,
@@ -148,6 +152,7 @@ class _SignupScreenState extends State<SignupScreen>
                                   emailController.value.copyWith(text: email);
                             },
                             textInputAction: TextInputAction.next,
+                            validator: emailValidator,
                           ),
                           InputField(
                             textInputType: TextInputType.visiblePassword,
@@ -160,6 +165,7 @@ class _SignupScreenState extends State<SignupScreen>
                                   .copyWith(text: password);
                             },
                             textInputAction: TextInputAction.next,
+                            validator: passwordValidator,
                           ),
                           InputField(
                             textInputType: TextInputType.visiblePassword,
@@ -171,17 +177,20 @@ class _SignupScreenState extends State<SignupScreen>
                                   .value
                                   .copyWith(text: cPassword);
                             },
-                            textInputAction: TextInputAction.next,
+                            textInputAction: TextInputAction.done,
+                            validator: (value) {
+                              if (value != passwordController.text) {
+                                return "Password and confirm password doesn't match";
+                              }
+                            },
                           ),
                           SizedBox(height: 15),
                           buttons(
                             'SIGN UP',
                             2.6,
-                            () {
+                            () async {
                               // HapticFeedback.lightImpact();
-                              Fluttertoast.showToast(msg: 'Sign up pressed');
-                              signUp(emailController.text,
-                                  passwordController.text);
+                              await signUp();
                               FocusScope.of(context).unfocus();
                             },
                             context,
@@ -189,12 +198,11 @@ class _SignupScreenState extends State<SignupScreen>
                           SizedBox(),
                           InkWell(
                             onTap: () {
-                              Fluttertoast.showToast(
-                                  msg: 'Already have an account ');
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => LoginScreen()),
+                                  builder: (context) => LoginScreen(),
+                                ),
                               );
                             },
                             child: Text(
@@ -219,28 +227,29 @@ class _SignupScreenState extends State<SignupScreen>
     );
   }
 
-  void signUp(String email, String password) async {
+  Future<void> signUp() async {
     if (_formKey.currentState!.validate()) {
       try {
         setState(() {
           showSpinner = true;
         });
         await _auth
-            .createUserWithEmailAndPassword(email: email, password: password)
+            .createUserWithEmailAndPassword(
+                email: emailController.text, password: passwordController.text)
             .then(
-              (value) async => {await sendDetailsToFireStore()},
-            )
-            .catchError(
-              (e) => {Fluttertoast.showToast(msg: e!.message)},
+              (value) => {sendDetailsToFireStore()},
             );
       } on FirebaseAuthException catch (error) {
+        print(error.code);
         setState(() {
           showSpinner = false;
         });
         switch (error.code) {
           case "invalid-email":
             errorMessage = "Your email address appears to be malformed.";
-
+            break;
+          case "email-already-in-use":
+            errorMessage = "User with this email address already exists.";
             break;
           case "wrong-password":
             errorMessage = "Your password is wrong.";
@@ -273,21 +282,20 @@ class _SignupScreenState extends State<SignupScreen>
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
     User? user = _auth.currentUser;
 
-    await firebaseFirestore.collection('movies').doc(user!.uid).set(
-      {
-        "email": user.email,
-        "password": passwordController.text,
-        "username": usernameController.text,
-        "uid": user.uid,
-      },
-    );
+    await firebaseFirestore.collection('users').doc(user!.uid).set({
+      "email": user.email,
+      "password": passwordController.text,
+      "username": usernameController.text,
+      "uid": user.uid,
+      "totalPosts": 0,
+    });
 
     Fluttertoast.showToast(msg: 'Account created successfully');
 
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const HomePage(),
+        builder: (context) => const GetUserData(),
       ),
     );
   }

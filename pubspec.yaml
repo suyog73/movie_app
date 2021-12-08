@@ -27,7 +27,8 @@ dependencies:
   modal_progress_hud_nsn: ^0.1.0-nullsafety-1
   introduction_screen: ^2.1.0
   firebase_auth: ^3.2.0
-
+  lottie: ^1.2.1
+  url_launcher: ^6.0.17
 
 flutter_icons:
   android: true

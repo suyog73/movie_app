@@ -3,7 +3,8 @@ class UserDetails {
   static String? username;
   static String? email;
   static String? password;
+
   // static bool? isAdmin;
   static String? uid;
-  // static String? profilePhotoUrl;
+  static String? totalPosts;
 }

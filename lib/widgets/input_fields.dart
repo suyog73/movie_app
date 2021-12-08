@@ -16,6 +16,7 @@ class InputFields extends StatelessWidget {
   }) : super(key: key);
 
   final String label;
+
   final TextEditingController controller;
   final ValueSetter<String> onChange;
   final FormFieldValidator<String>? validator;

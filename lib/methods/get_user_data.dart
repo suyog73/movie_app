@@ -3,8 +3,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:movie_app/models/user.dart';
-import 'package:movie_app/screens/home_page.dart';
+import 'package:movie_app/models/user_detail.dart';
+import 'package:movie_app/screens/movies/all_movies.dart';
 
 class GetUserData extends StatelessWidget {
   const GetUserData({Key? key}) : super(key: key);
@@ -14,8 +14,6 @@ class GetUserData extends StatelessWidget {
     FirebaseAuth auth = FirebaseAuth.instance;
     String uid = auth.currentUser!.uid.toString();
     String documentId = uid;
-
-    print(auth.currentUser);
 
     CollectionReference users = FirebaseFirestore.instance.collection('users');
     return FutureBuilder<DocumentSnapshot>(
@@ -36,15 +34,17 @@ class GetUserData extends StatelessWidget {
           UserDetails.email = data['email'].toString();
           UserDetails.username = data['username'].toString();
           UserDetails.password = data['password'].toString();
-          // UserDetails.isAdmin = data['IsAdmin'];
-          // UserDetails.profilePhotoUrl = data['ProfilePhotoUrl'].toString();
+          UserDetails.totalPosts = data['totalPosts'].toString();
           UserDetails.uid = data['uid'];
 
-          return HomePage();
+          return AllMoviesPage();
         }
         return Container(
-            color: Colors.white,
-            child: Center(child: CircularProgressIndicator()));
+          color: Colors.white,
+          child: Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
       },
     );
   }

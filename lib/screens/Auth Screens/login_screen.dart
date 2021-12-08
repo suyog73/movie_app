@@ -8,12 +8,13 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:movie_app/helper/constants.dart';
+import 'package:movie_app/helper/validators.dart';
 import 'package:movie_app/methods/get_user_data.dart';
 import 'package:movie_app/screens/app_drawer.dart';
-import 'package:movie_app/screens/home_page.dart';
-import 'package:movie_app/screens/signup_screen.dart';
+import 'package:movie_app/screens/movies/all_movies.dart';
+import 'package:movie_app/screens/Auth%20Screens/signup_screen.dart';
 import 'package:movie_app/widgets/input_field.dart';
-import 'package:movie_app/widgets/buttons.dart';
+import 'package:movie_app/widgets/button/buttons.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -137,6 +138,7 @@ class _LoginScreen extends State<LoginScreen>
                                   emailController.value.copyWith(text: email);
                             },
                             textInputAction: TextInputAction.next,
+                            validator: emailValidator,
                           ),
                           InputField(
                             textInputType: TextInputType.visiblePassword,
@@ -149,6 +151,7 @@ class _LoginScreen extends State<LoginScreen>
                                   .copyWith(text: password);
                             },
                             textInputAction: TextInputAction.done,
+                            validator: requiredValidator,
                           ),
                           buttons(
                             'LOGIN',
@@ -219,7 +222,6 @@ class _LoginScreen extends State<LoginScreen>
         switch (error.code) {
           case "invalid-email":
             errorMessage = "Your email address appears to be malformed.";
-
             break;
           case "wrong-password":
             errorMessage = "Your password is wrong.";
