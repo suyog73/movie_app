@@ -5,13 +5,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:movie_app/helper/constants.dart';
 import 'package:movie_app/methods/authentication.dart';
 import 'package:movie_app/methods/get_user_data.dart';
 import 'package:movie_app/models/user_detail.dart';
 import 'package:movie_app/screens/developer_info.dart';
-import 'package:movie_app/screens/movies/all_movies.dart';
-import 'package:movie_app/screens/movies/user_movies.dart';
+import 'package:movie_app/widgets/admin/admin_button.dart';
+import 'package:movie_app/widgets/admin/user_info.dart';
 
 var snapshots = FirebaseFirestore.instance
     .collection('movies')
@@ -59,26 +58,37 @@ class _AppDrawerState extends State<AppDrawer> {
               Center(
                 child: Column(
                   children: [
-                    InkWell(
-                      child: CircleAvatar(
-                        radius: 60,
-                        backgroundImage: AssetImage("assets/images/movies.png"),
-                        backgroundColor: Colors.amber[50],
-                      ),
-                      onTap: () {},
-                    ),
+                    UserDetails.isAdmin
+                        ? Icon(
+                            FontAwesomeIcons.crown,
+                            size: 60,
+                            color: Colors.yellowAccent,
+                          )
+                        : CircleAvatar(
+                            radius: 60,
+                            backgroundImage:
+                                AssetImage("assets/images/movies.png"),
+                            backgroundColor: Colors.amber[50],
+                          ),
                     SizedBox(height: 10),
                     Text(
                       UserDetails.username.toString(),
-                      style: TextStyle(fontSize: 26),
+                      style: TextStyle(
+                          fontSize: 26,
+                          color: Colors.pink,
+                          fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 10),
                     Text(
                       UserDetails.email.toString(),
-                      style: TextStyle(fontSize: 17),
+                      style: TextStyle(
+                        fontSize: 17,
+                        color: Colors.pink,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     SizedBox(height: 10),
-                    Text('Total Movies: ${UserDetails.totalPosts}'),
+                    // Text('Total Movies: ${UserDetails.totalPosts}'),
                   ],
                 ),
               ),
@@ -94,7 +104,10 @@ class _AppDrawerState extends State<AppDrawer> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => UserMovies(),
+                            builder: (context) => UserInfo(
+                              username: UserDetails.username.toString(),
+                              uid: UserDetails.uid.toString(),
+                            ),
                           ),
                         );
                       },
@@ -138,43 +151,8 @@ class _AppDrawerState extends State<AppDrawer> {
                         ],
                       ),
                     ),
-                    // SizedBox(height: 30),
-                    // Row(
-                    //   children: [
-                    //     Icon(FontAwesomeIcons.solidEnvelope),
-                    //     SizedBox(width: 10),
-                    //     Expanded(
-                    //       child: Text(
-                    //         UserDetails.email.toString(),
-                    //         style: TextStyle(fontSize: 18),
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
-                    // SizedBox(height: 30),
-                    // Row(
-                    //   children: [
-                    //     Icon(FontAwesomeIcons.lock),
-                    //     SizedBox(width: 10),
-                    //     Text(
-                    //       UserDetails.password.toString(),
-                    //       style: TextStyle(fontSize: 18),
-                    //     ),
-                    //   ],
-                    // ),
-                    // SizedBox(height: 30),
-                    // Row(
-                    //   children: [
-                    //     Icon(Icons.vpn_key),
-                    //     SizedBox(width: 10),
-                    //     Expanded(
-                    //       child: Text(
-                    //         UserDetails.uid.toString(),
-                    //         style: TextStyle(fontSize: 18),
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
+                    SizedBox(height: 30),
+                    if (UserDetails.isAdmin) AdminButton(),
                     SizedBox(height: 50),
                     InkWell(
                       onTap: () async {

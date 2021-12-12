@@ -10,9 +10,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:movie_app/helper/constants.dart';
 import 'package:movie_app/helper/validators.dart';
-import 'package:movie_app/methods/authentication.dart';
 import 'package:movie_app/methods/get_user_data.dart';
-import 'package:movie_app/screens/movies/all_movies.dart';
 import 'package:movie_app/screens/Auth%20Screens/login_screen.dart';
 import 'package:movie_app/widgets/input_field.dart';
 import 'package:movie_app/widgets/button/buttons.dart';
@@ -287,15 +285,15 @@ class _SignupScreenState extends State<SignupScreen>
       "password": passwordController.text,
       "username": usernameController.text,
       "uid": user.uid,
-      "totalPosts": 0,
+      "isAdmin": false,
     });
 
     Fluttertoast.showToast(msg: 'Account created successfully');
 
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => const GetUserData(),
+        builder: (context) => GetUserData(),
       ),
     );
   }

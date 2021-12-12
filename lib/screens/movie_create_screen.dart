@@ -2,7 +2,6 @@
 
 import 'dart:io';
 import 'dart:ui';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -11,14 +10,10 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:movie_app/helper/constants.dart';
 import 'package:movie_app/helper/validators.dart';
 import 'package:movie_app/methods/firebase_data_store.dart';
 import 'package:movie_app/methods/firebase_upload.dart';
-import 'package:movie_app/methods/get_user_data.dart';
-import 'package:movie_app/models/movie_detail.dart';
 import 'package:movie_app/models/user_detail.dart';
-import 'package:movie_app/screens/movies/all_movies.dart';
 import 'package:movie_app/widgets/button/action_button.dart';
 import 'package:movie_app/widgets/input_fields.dart';
 import 'package:path/path.dart' as path;
@@ -241,8 +236,6 @@ class _MovieCreateScreenState extends State<MovieCreateScreen> {
                                     activeColor: Colors.lightBlueAccent,
                                     groupValue: isSeries,
                                     onChanged: (value) {
-                                      print("value $value");
-
                                       setSelectedRadio(value);
                                     },
                                   ),
@@ -252,8 +245,6 @@ class _MovieCreateScreenState extends State<MovieCreateScreen> {
                                     activeColor: Colors.lightBlueAccent,
                                     groupValue: isAnime,
                                     onChanged: (value) {
-                                      print("value $value");
-
                                       setSelectedRadio(value);
                                     },
                                   ),

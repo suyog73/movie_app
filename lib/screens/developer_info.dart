@@ -7,6 +7,8 @@ import 'package:movie_app/helper/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DeveloperInfo extends StatelessWidget {
+  static String id = 'developer_info_screen';
+
   const DeveloperInfo({Key? key}) : super(key: key);
 
   @override

@@ -10,8 +10,6 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:movie_app/helper/constants.dart';
 import 'package:movie_app/helper/validators.dart';
 import 'package:movie_app/methods/get_user_data.dart';
-import 'package:movie_app/screens/app_drawer.dart';
-import 'package:movie_app/screens/movies/all_movies.dart';
 import 'package:movie_app/screens/Auth%20Screens/signup_screen.dart';
 import 'package:movie_app/widgets/input_field.dart';
 import 'package:movie_app/widgets/button/buttons.dart';
@@ -167,8 +165,6 @@ class _LoginScreen extends State<LoginScreen>
                           SizedBox(),
                           InkWell(
                             onTap: () {
-                              Fluttertoast.showToast(
-                                  msg: 'Create a new account pressed');
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -210,8 +206,11 @@ class _LoginScreen extends State<LoginScreen>
             .then(
               (uid) => {
                 Fluttertoast.showToast(msg: "Login Successful"),
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const GetUserData()),
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => GetUserData(),
+                  ),
                 ),
               },
             );

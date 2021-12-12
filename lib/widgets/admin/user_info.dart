@@ -1,39 +1,44 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
 import 'dart:ui';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:movie_app/helper/constants.dart';
+import 'package:movie_app/methods/get_user_data.dart';
 import 'package:movie_app/models/user_detail.dart';
 import 'package:movie_app/screens/movie_create_screen.dart';
+import 'package:movie_app/screens/movies/all_movies.dart';
 import 'package:movie_app/widgets/movie_card.dart';
 import 'package:movie_app/widgets/page_transition.dart';
-import '../app_drawer.dart';
 
-class AllMoviesPage extends StatefulWidget {
-  const AllMoviesPage({Key? key}) : super(key: key);
+class UserInfo extends StatefulWidget {
+  const UserInfo({
+    Key? key,
+    required this.username,
+    required this.uid,
+  }) : super(key: key);
+
+  final String username, uid;
 
   @override
-  State<AllMoviesPage> createState() => _AllMoviesPageState();
+  State<UserInfo> createState() => _UserInfo();
 }
 
-class _AllMoviesPageState extends State<AllMoviesPage> {
-  var snapshot = FirebaseFirestore.instance
+class _UserInfo extends State<UserInfo> {
+  var snapshots = FirebaseFirestore.instance
       .collection('movies')
       .orderBy('timeStamp', descending: true)
       .snapshots();
 
   String docIds = '';
+  int totalPost = 0;
 
   @override
   Widget build(BuildContext context) {
-    print("All Movie");
     return Scaffold(
       extendBodyBehindAppBar: true,
-      drawer: AppDrawer(),
       appBar: PreferredSize(
         preferredSize: Size(double.infinity, 56),
         child: ClipRRect(
@@ -48,18 +53,15 @@ class _AllMoviesPageState extends State<AllMoviesPage> {
               backgroundColor: Colors.white.withOpacity(0.2),
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Icon(FontAwesomeIcons.video),
-                  SizedBox(width: 15),
+                children: [
                   Text(
-                    'MovieAdda',
+                    '${widget.username.toString()} Collection',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(width: 35),
                 ],
               ),
             ),
@@ -70,10 +72,7 @@ class _AllMoviesPageState extends State<AllMoviesPage> {
         onPressed: () {
           Navigator.push(context, ScaleTransition4(MovieCreateScreen()));
         },
-        child: Icon(
-          FontAwesomeIcons.plusSquare,
-          size: 28,
-        ),
+        child: Icon(FontAwesomeIcons.plusSquare),
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -94,6 +93,7 @@ class _AllMoviesPageState extends State<AllMoviesPage> {
                     );
                   }
                   final _notification = notificationsSnapshots.data!.docs;
+
                   return ListView.builder(
                     physics: BouncingScrollPhysics(),
                     itemCount: _notification.length,
@@ -105,21 +105,19 @@ class _AllMoviesPageState extends State<AllMoviesPage> {
                       }
                       return Column(
                         children: [
-                          if (index == 0) SizedBox(height: 10),
-                          MovieCard(
-                            uid: _notification[index]['uid'],
-                            docId: docIds,
-                            imageUrl: _notification[index]['imageUrl'],
-                            movie: _notification[index]['movie'],
-                            username: _notification[index]['creator'],
-                            totalSeason: _notification[index]['totalSeason'],
-                            storeIn: _notification[index]['storeIn'],
-                            type: _notification[index]['type'],
-                            isAdmin: false,
-                            isPersonal: false,
-                          ),
-                          if (index == _notification.length - 1)
-                            SizedBox(height: 60),
+                          if (_notification[index]['uid'] == widget.uid)
+                            MovieCard(
+                              uid: _notification[index]['uid'],
+                              docId: _notification[index]['docId'],
+                              imageUrl: _notification[index]['imageUrl'],
+                              movie: _notification[index]['movie'],
+                              username: _notification[index]['creator'],
+                              totalSeason: _notification[index]['totalSeason'],
+                              storeIn: _notification[index]['storeIn'],
+                              type: _notification[index]['type'],
+                              isPersonal: true,
+                              isAdmin: UserDetails.isAdmin,
+                            ),
                         ],
                       );
                     },

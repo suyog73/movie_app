@@ -8,6 +8,8 @@ import 'package:movie_app/helper/constants.dart';
 import 'package:movie_app/screens/Auth%20Screens/login_screen.dart';
 
 class OnBoardingScreen extends StatelessWidget {
+  static String id = 'onBoarding_screen';
+
   const OnBoardingScreen({Key? key}) : super(key: key);
 
   @override
@@ -99,6 +101,8 @@ class OnBoardingScreen extends StatelessWidget {
   }
 
   void goToHome(context) => Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => LoginScreen()),
+        MaterialPageRoute(
+          builder: (context) => LoginScreen(),
+        ),
       );
 }

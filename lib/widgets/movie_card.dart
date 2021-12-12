@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:movie_app/helper/constants.dart';
 import 'package:movie_app/models/movie_detail.dart';
+import 'package:movie_app/widgets/admin/user_info.dart';
 import 'package:movie_app/widgets/button/delete_button.dart';
 import 'package:movie_app/widgets/button/like_button.dart';
 import 'package:movie_app/models/user_detail.dart';
@@ -21,27 +22,42 @@ class MovieCard extends StatelessWidget {
     Key? key,
     required this.movie,
     required this.uid,
-    required this.creator,
+    required this.username,
     required this.totalSeason,
     required this.imageUrl,
     required this.docId,
     required this.storeIn,
     required this.type,
+    this.isAdmin = false,
+    required this.isPersonal,
   }) : super(key: key);
 
-  final String movie, uid, creator, docId, totalSeason, imageUrl, storeIn, type;
+  final String movie,
+      uid,
+      username,
+      docId,
+      totalSeason,
+      imageUrl,
+      storeIn,
+      type;
+  final bool isAdmin, isPersonal;
 
   @override
   Widget build(BuildContext context) {
     MovieDetails.movie = movie;
     MovieDetails.uid = uid;
-    MovieDetails.creator = creator;
-    MovieDetails.docId = docId;
+    MovieDetails.creator = username;
+    // MovieDetails.docId = docId;
     MovieDetails.totalSeason = totalSeason;
     MovieDetails.imageUrl = imageUrl;
     MovieDetails.storeIn = storeIn;
     MovieDetails.type = type;
     Size size = MediaQuery.of(context).size;
+
+    String parts = 'Total Parts';
+    if (type == 'Web Series') {
+      parts = 'Total seasons';
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5)
@@ -91,7 +107,7 @@ class MovieCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              SizedBox(height: 55),
+                              SizedBox(height: isPersonal ? 10 : 55),
                               Text(
                                 "Name : $movie",
                                 softWrap: true,
@@ -113,6 +129,11 @@ class MovieCard extends StatelessWidget {
                                 style: TextStyle(fontSize: 18),
                               ),
                               SizedBox(height: 5),
+                              Text(
+                                "$parts: $totalSeason",
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              SizedBox(height: 5),
                             ],
                           ),
                         ),
@@ -125,8 +146,8 @@ class MovieCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           LikeButton(docId: docId),
-                          WatchLaterButton(),
-                          if (UserDetails.uid == uid) DeleteButton(docId: docId)
+                          if (UserDetails.uid == uid || isAdmin)
+                            DeleteButton(docId: docId, imageUrl: imageUrl)
                         ],
                       ),
                     ),
@@ -135,32 +156,44 @@ class MovieCard extends StatelessWidget {
               ),
             ),
           ),
-          Positioned(
-            right: 20,
-            child: Container(
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                gradient: creator == UserDetails.username
-                    ? LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Color(0xff9dfbc8),
-                          Color(0xfff5f186),
-                        ],
-                      )
-                    : kLinearGradient,
-                borderRadius: BorderRadius.only(
-                  bottomRight: Radius.circular(15),
-                  bottomLeft: Radius.circular(15),
+          if (!isPersonal) // user is looking the list of specific users movies
+            Positioned(
+              right: 20,
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          UserInfo(username: username, uid: uid),
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    gradient: username == UserDetails.username
+                        ? LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Color(0xff9dfbc8),
+                              Color(0xfff5f186),
+                            ],
+                          )
+                        : kLinearGradient,
+                    borderRadius: BorderRadius.only(
+                      bottomRight: Radius.circular(15),
+                      bottomLeft: Radius.circular(15),
+                    ),
+                  ),
+                  child: Text(
+                    username,
+                    style: TextStyle(fontSize: 19),
+                  ),
                 ),
               ),
-              child: Text(
-                creator,
-                style: TextStyle(fontSize: 19),
-              ),
             ),
-          ),
         ],
       ),
     );

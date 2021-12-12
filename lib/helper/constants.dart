@@ -18,18 +18,19 @@ const kTextStyle = TextStyle(color: Colors.black87, fontSize: 15);
 
 PageDecoration kGetPageDecoration() => PageDecoration(
       boxDecoration: BoxDecoration(gradient: kLinearGradient),
-      titleTextStyle: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-      bodyTextStyle: TextStyle(fontSize: 20),
-      descriptionPadding: EdgeInsets.all(16).copyWith(bottom: 0),
-      imagePadding: EdgeInsets.all(24),
+      titleTextStyle:
+          const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+      bodyTextStyle: const TextStyle(fontSize: 20),
+      descriptionPadding: const EdgeInsets.all(16).copyWith(bottom: 0),
+      imagePadding: const EdgeInsets.all(24),
       // pageColor: Colors.white,
     );
 
 DotsDecorator kGetDotDecoration() => DotsDecorator(
-      color: Color(0xFFBDBDBD),
+      color: const Color(0xFFBDBDBD),
       //activeColor: Colors.orange,
-      size: Size(10, 10),
-      activeSize: Size(22, 10),
+      size: const Size(10, 10),
+      activeSize: const Size(22, 10),
       activeShape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
       ),

@@ -1,22 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:movie_app/models/user_detail.dart';
 
 class DeleteButton extends StatelessWidget {
   const DeleteButton({
     Key? key,
     required this.docId,
+    required this.imageUrl,
   }) : super(key: key);
 
-  final String docId;
+  final String docId, imageUrl;
 
   @override
   Widget build(BuildContext context) {
     // deleteMovie
     Future deleteMovie() async {
-      print("widget id $docId");
-      FirebaseFirestore.instance.collection('movies').doc(docId).delete(); //
+      print("delete post id $docId");
+      FirebaseFirestore.instance.collection('movies').doc(docId).delete();
+      FirebaseStorage.instance.refFromURL(imageUrl).delete();
     }
 
     return InkWell(

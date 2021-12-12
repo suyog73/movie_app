@@ -35,6 +35,7 @@ class GetUserData extends StatelessWidget {
           UserDetails.username = data['username'].toString();
           UserDetails.password = data['password'].toString();
           UserDetails.totalPosts = data['totalPosts'].toString();
+          UserDetails.isAdmin = data['isAdmin'];
           UserDetails.uid = data['uid'];
 
           return AllMoviesPage();

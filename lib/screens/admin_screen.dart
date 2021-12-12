@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+// ignore_for_file: prefer_const_constructors
 
 import 'dart:ui';
 
@@ -7,33 +7,27 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:movie_app/helper/constants.dart';
-import 'package:movie_app/models/user_detail.dart';
-import 'package:movie_app/screens/movie_create_screen.dart';
-import 'package:movie_app/widgets/movie_card.dart';
-import 'package:movie_app/widgets/page_transition.dart';
-import '../app_drawer.dart';
+import 'package:movie_app/widgets/admin/user_list.dart';
 
-class AllMoviesPage extends StatefulWidget {
-  const AllMoviesPage({Key? key}) : super(key: key);
+class AdminScreen extends StatefulWidget {
+  const AdminScreen({Key? key}) : super(key: key);
 
   @override
-  State<AllMoviesPage> createState() => _AllMoviesPageState();
+  State<AdminScreen> createState() => _AdminScreenState();
 }
 
-class _AllMoviesPageState extends State<AllMoviesPage> {
-  var snapshot = FirebaseFirestore.instance
-      .collection('movies')
-      .orderBy('timeStamp', descending: true)
-      .snapshots();
-
-  String docIds = '';
+class _AdminScreenState extends State<AdminScreen> {
+  var snapshots = FirebaseFirestore.instance.collection('users').snapshots();
+  dynamic userNumbers;
 
   @override
   Widget build(BuildContext context) {
-    print("All Movie");
+    FirebaseFirestore.instance.collection('users').get().then((value) => {
+          userNumbers = value.docs.length,
+        });
+
     return Scaffold(
       extendBodyBehindAppBar: true,
-      drawer: AppDrawer(),
       appBar: PreferredSize(
         preferredSize: Size(double.infinity, 56),
         child: ClipRRect(
@@ -52,7 +46,7 @@ class _AllMoviesPageState extends State<AllMoviesPage> {
                   Icon(FontAwesomeIcons.video),
                   SizedBox(width: 15),
                   Text(
-                    'MovieAdda',
+                    'MovieAdda Users',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 24,
@@ -66,25 +60,15 @@ class _AllMoviesPageState extends State<AllMoviesPage> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(context, ScaleTransition4(MovieCreateScreen()));
-        },
-        child: Icon(
-          FontAwesomeIcons.plusSquare,
-          size: 28,
-        ),
-      ),
       body: Container(
-        decoration: BoxDecoration(
-          gradient: kLinearGradient,
-        ),
+        decoration: BoxDecoration(gradient: kLinearGradient),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Expanded(
               child: StreamBuilder(
                 stream: snapshots,
-                builder: (context,
+                builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
                         notificationsSnapshots) {
                   if (notificationsSnapshots.connectionState ==
@@ -98,25 +82,34 @@ class _AllMoviesPageState extends State<AllMoviesPage> {
                     physics: BouncingScrollPhysics(),
                     itemCount: _notification.length,
                     itemBuilder: (context, index) {
-                      try {
-                        docIds = _notification[index]['docId'];
-                      } catch (e) {
-                        docIds = '';
-                      }
                       return Column(
                         children: [
                           if (index == 0) SizedBox(height: 10),
-                          MovieCard(
+                          if (index == 0)
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                border: Border.all(
+                                    color: Colors.redAccent, width: 2),
+                                color: Colors.black12,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(18.0),
+                                child: Text(
+                                  'Number of current users:- $userNumbers',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 22,
+                                    color: Colors.black45,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          UserList(
+                            username: _notification[index]['username'],
+                            email: _notification[index]['email'],
+                            isAdmin: _notification[index]['isAdmin'],
                             uid: _notification[index]['uid'],
-                            docId: docIds,
-                            imageUrl: _notification[index]['imageUrl'],
-                            movie: _notification[index]['movie'],
-                            username: _notification[index]['creator'],
-                            totalSeason: _notification[index]['totalSeason'],
-                            storeIn: _notification[index]['storeIn'],
-                            type: _notification[index]['type'],
-                            isAdmin: false,
-                            isPersonal: false,
                           ),
                           if (index == _notification.length - 1)
                             SizedBox(height: 60),

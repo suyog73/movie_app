@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class MyCustomUI extends StatefulWidget {
+  const MyCustomUI({Key? key}) : super(key: key);
+
   @override
   _MyCustomUIState createState() => _MyCustomUIState();
 }
@@ -20,8 +22,8 @@ class _MyCustomUIState extends State<MyCustomUI> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    _animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 600));
+    _animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 600));
 
     _animation1 = Tween<double>(begin: 0, end: 20).animate(CurvedAnimation(
       parent: _animationController,
@@ -120,7 +122,7 @@ class _MyCustomUIState extends State<MyCustomUI> with TickerProviderStateMixin {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  CircleAvatar(
+                  const CircleAvatar(
                     backgroundColor: Colors.black12,
                     radius: 35,
                     child: Icon(
@@ -157,7 +159,7 @@ class _MyCustomUIState extends State<MyCustomUI> with TickerProviderStateMixin {
                       }),
                     ],
                   ),
-                  SizedBox(),
+                  const SizedBox(),
                 ],
               ),
             ),
@@ -196,12 +198,12 @@ class _MyCustomUIState extends State<MyCustomUI> with TickerProviderStateMixin {
           onTap: voidCallback,
           title: Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1),
           ),
-          trailing: Icon(
+          trailing: const Icon(
             Icons.arrow_right,
             color: Colors.white,
           ),
@@ -212,7 +214,7 @@ class _MyCustomUIState extends State<MyCustomUI> with TickerProviderStateMixin {
   }
 
   Widget divider() {
-    return Container(
+    return SizedBox(
       height: 5,
       width: MediaQuery.of(context).size.width,
     );

@@ -5,8 +5,8 @@ class MovieCountProvider extends ChangeNotifier {
 
   int get userMovieCount => _userMovieCount;
 
-  void setCount(movieCount) {
-    _userMovieCount = movieCount;
+  void setCount() {
+    _userMovieCount++;
     notifyListeners();
   }
 }
