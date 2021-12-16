@@ -47,7 +47,7 @@ class OnBoardingScreen extends StatelessWidget {
               PageViewModel(
                 title: 'Welcome to MovieAdda',
                 body:
-                    'The perfect platform to store all your favourite movies and also see the collection of movies of other users.',
+                    'The perfect platform to store all your favourite movies, web-series and anime and also see the collection of movies of other users.',
                 image: Image(
                   image: AssetImage('assets/images/Avengers.jpg'),
                   width: 350,

@@ -4,7 +4,7 @@ final creatorValidator =
     MultiValidator([RequiredValidator(errorText: 'Creator name is required')]);
 
 final requiredValidator =
-    MultiValidator([RequiredValidator(errorText: 'Creator name is required')]);
+    MultiValidator([RequiredValidator(errorText: 'Password is required')]);
 
 final movieValidator =
     MultiValidator([RequiredValidator(errorText: 'Movie name is required')]);

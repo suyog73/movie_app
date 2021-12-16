@@ -10,7 +10,9 @@ import 'package:movie_app/helper/constants.dart';
 import 'package:movie_app/widgets/admin/user_list.dart';
 
 class AdminScreen extends StatefulWidget {
-  const AdminScreen({Key? key}) : super(key: key);
+  const AdminScreen({Key? key, required this.userNumbers}) : super(key: key);
+
+  final dynamic userNumbers;
 
   @override
   State<AdminScreen> createState() => _AdminScreenState();
@@ -18,14 +20,9 @@ class AdminScreen extends StatefulWidget {
 
 class _AdminScreenState extends State<AdminScreen> {
   var snapshots = FirebaseFirestore.instance.collection('users').snapshots();
-  dynamic userNumbers;
 
   @override
   Widget build(BuildContext context) {
-    FirebaseFirestore.instance.collection('users').get().then((value) => {
-          userNumbers = value.docs.length,
-        });
-
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: PreferredSize(
@@ -89,14 +86,12 @@ class _AdminScreenState extends State<AdminScreen> {
                             Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(15),
-                                border: Border.all(
-                                    color: Colors.redAccent, width: 2),
-                                color: Colors.black12,
+                                color: Color(0xffc7ddfc),
                               ),
                               child: Padding(
                                 padding: const EdgeInsets.all(18.0),
                                 child: Text(
-                                  'Number of current users:- $userNumbers',
+                                  'Number of current users:- ${widget.userNumbers}',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 22,
