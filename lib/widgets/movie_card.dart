@@ -4,12 +4,10 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:movie_app/helper/constants.dart';
-import 'package:movie_app/models/movie_detail.dart';
 import 'package:movie_app/widgets/admin/user_info.dart';
 import 'package:movie_app/widgets/button/delete_button.dart';
 import 'package:movie_app/widgets/button/like_button.dart';
 import 'package:movie_app/models/user_detail.dart';
-import 'package:movie_app/widgets/button/watch_later_button.dart';
 
 DateTime dateToday = DateTime.now();
 String bigDate = dateToday.toString().substring(0, 10);
@@ -44,14 +42,6 @@ class MovieCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    MovieDetails.movie = movie;
-    MovieDetails.uid = uid;
-    MovieDetails.creator = username;
-    // MovieDetails.docId = docId;
-    MovieDetails.totalSeason = totalSeason;
-    MovieDetails.imageUrl = imageUrl;
-    MovieDetails.storeIn = storeIn;
-    MovieDetails.type = type;
     Size size = MediaQuery.of(context).size;
 
     String parts = 'Total Parts';

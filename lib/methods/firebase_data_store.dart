@@ -29,6 +29,7 @@ Future sendDetailsToFireStore(creator, movieName, storeIn, totalSeason,
         .collection('users')
         .doc(UserDetails.uid)
         .update({"totalPosts": FieldValue.increment(1)});
+
     print("Movie added ${value.id}");
   }).catchError((e) => print('Error $e'));
 

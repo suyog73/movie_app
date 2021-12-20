@@ -1,5 +1,4 @@
 class UserDetails {
-  // static String? name;
   static String? username;
   static String? email;
   static String? password;
