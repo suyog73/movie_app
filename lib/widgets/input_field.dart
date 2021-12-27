@@ -35,11 +35,9 @@ class InputField extends StatelessWidget {
         textInputAction: textInputAction,
         validator: validator,
         decoration: kTextFormFieldAuthDec.copyWith(
-            prefixIcon: Icon(
-              icon,
-              color: Colors.redAccent,
-            ),
-            hintText: hintText),
+          prefixIcon: Icon(icon, color: Colors.redAccent),
+          hintText: hintText,
+        ),
       ),
     );
   }

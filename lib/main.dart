@@ -21,9 +21,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Movies App',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.yellow,
-      ),
+      theme: ThemeData(primarySwatch: Colors.yellow),
       home: user != null ? const GetUserData() : const OnBoardingScreen(),
     );
   }
