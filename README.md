@@ -50,5 +50,5 @@ A simple app to store all your movies, web-series and animes in one place and al
  
  
  <br /> <br />
- <p>You can download MovieAdda app from this link:- https://drive.google.com/file/d/1e8_d3nGwF-Jqes8UCG4IVIXrbTAbWp8o/view?usp=sharing
+ <p>You can download MovieAdda app from this link:- https://drive.google.com/file/d/1e8_d3nGwF-Jqes8UCG4IVIXrbTAbWp8o/view?usp=sharing</p>
  Here are my some another projects using flutter:- https://drive.google.com/drive/folders/1nx7z0Fo52Rh1mFRPFonGMYulrT5CPgCz?usp=sharing
