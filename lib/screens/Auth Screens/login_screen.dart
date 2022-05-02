@@ -155,7 +155,6 @@ class _LoginScreen extends State<LoginScreen>
                             'LOGIN',
                             2.6,
                             () async {
-                              // HapticFeedback.lightImpact();
                               FocusScope.of(context).unfocus();
 
                               await login();

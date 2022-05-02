@@ -21,9 +21,11 @@ class GetUserData extends StatelessWidget {
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.hasError) {
+          print('Error');
           return Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasData && !snapshot.data!.exists) {
+          print('Error');
           return Container(
               color: Colors.white,
               child: Center(child: CircularProgressIndicator()));
